@@ -1,0 +1,7 @@
+version: '3'
+services:
+    mqtt:
+        image: "toke/mosquitto:latest"
+        container_name: schrag_mqtt
+        network_mode: host
+        restart: always
