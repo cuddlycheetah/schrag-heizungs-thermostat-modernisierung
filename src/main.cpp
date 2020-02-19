@@ -4,8 +4,8 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "SSID";
-const char* password = "PASSWORD";
+const char* ssid = "🐆📶";
+const char* password = "cuddlycheetah";
 const char* mqtt_server = "192.168.1.143";
 
 WiFiClient espClient;
@@ -65,15 +65,27 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   int value = String((char*)payload).toInt();
   if (value != lastValue) {
+    while (lastValue > value) {
+      potCmd(POT_DOWN);
+      delayMicroseconds(150);
+      lastValue--;
+    }
+    while (lastValue > value) {
+      potCmd(POT_UP);
+      delayMicroseconds(150);
+      lastValue++;
+    }
+    lastValue = value;
+  }
+  if (value == 0) {
     for (int i=0; i<100; i++) {
       potCmd(POT_UP);
       delayMicroseconds(150);
     }
-    for (int i=0; i<value; i++) {
+    /*for (int i=0; i<value; i++) {
       potCmd(POT_DOWN);
       delayMicroseconds(150);
-    }
-    lastValue = value;
+    }*/
   }
 }
 
@@ -119,6 +131,7 @@ void setup() {
 void loop() {
   if (!client.connected()) {
     resetPoti();
+    lastValue = 0;
     reconnect();
   }
   client.loop();
