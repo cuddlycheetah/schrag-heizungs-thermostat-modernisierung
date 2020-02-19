@@ -4,9 +4,9 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "test";
-const char* password = "cuddlycheetah";
-const char* mqtt_server = "192.168.1.149";
+const char* ssid = "SSID";
+const char* password = "PASSWORD";
+const char* mqtt_server = "192.168.1.143";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -23,6 +23,12 @@ void potCmd(boolean up){
   digitalWrite(PIN_INC, HIGH);
   delayMicroseconds(1e3);
   digitalWrite(PIN_INC, LOW);
+}
+void resetPoti() {
+  for (int i=0; i < 100; i++) {
+    potCmd(POT_UP);
+    delayMicroseconds(150);
+  }
 }
 
 void setup_wifi() {
@@ -48,6 +54,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
+int lastValue = 0;
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -56,23 +63,20 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
-
-  for (int i=0; i<100; i++) {
-    potCmd(POT_UP);
-    delayMicroseconds(150);
+  int value = String((char*)payload).toInt();
+  if (value != lastValue) {
+    for (int i=0; i<100; i++) {
+      potCmd(POT_UP);
+      delayMicroseconds(150);
+    }
+    for (int i=0; i<value; i++) {
+      potCmd(POT_DOWN);
+      delayMicroseconds(150);
+    }
+    lastValue = value;
   }
-  for (int i=0; i<(char)payload[0]; i++) {
-    potCmd(POT_DOWN);
-    delayMicroseconds(150);
-  }
-
-  if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);
-  } else {
-    digitalWrite(BUILTIN_LED, HIGH);
-  }
-
 }
+
 
 void reconnect() {
   // Loop until we're reconnected
@@ -99,12 +103,6 @@ void reconnect() {
   }
 }
 
-void resetPoti() {
-  for (int i=0; i<100; i++) {
-    potCmd(POT_UP);
-    delayMicroseconds(150);
-  }
-}
 
 void setup() {
   pinMode(PIN_INC, OUTPUT);
