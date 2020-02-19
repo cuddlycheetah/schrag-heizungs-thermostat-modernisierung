@@ -4,8 +4,8 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "🐆📶";
-const char* password = "cuddlycheetah";
+const char* ssid = "ssid";
+const char* password = "pw";
 const char* mqtt_server = "192.168.1.143";
 
 WiFiClient espClient;
@@ -70,7 +70,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
       delayMicroseconds(150);
       lastValue--;
     }
-    while (lastValue > value) {
+    while (lastValue < value) {
       potCmd(POT_UP);
       delayMicroseconds(150);
       lastValue++;
