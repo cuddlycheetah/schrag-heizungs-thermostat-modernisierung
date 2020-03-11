@@ -101,7 +101,7 @@ void reconnect() {
     if (client.connect(clientId.c_str(),"home/heizung/schrag/alive", 2, true, "0")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("home/heizung/schrag/alive", "1");
+      client.publish("home/heizung/schrag/alive", (uint8_t*)"1", 1, true);
       client.publish("home/heizung/schrag/advertise", "0");
       // ... and resubscribe
       client.subscribe("home/heizung/schrag/leistung");
